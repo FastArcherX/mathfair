@@ -1,1 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Circle Theorems Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+        .container { background: #fff; padding: 24px; border-radius: 8px; max-width: 500px; margin: auto; box-shadow: 0 2px 8px #ccc; }
+        .side-section { background: #fff; padding: 24px; border-radius: 8px; max-width: 500px; margin: auto; box-shadow: 0 2px 8px #ccc; }
+        h1 { text-align: center; }
+        label, select, input { display: block; width: 100%; margin-bottom: 12px; }
+        button { width: 100%; padding: 10px; background: #0078d7; color: #fff; border: none; border-radius: 4px; font-size: 16px; }
+        .result { margin-top: 20px; font-weight: bold; text-align: center; }
+        .svg-container { display: flex; justify-content: center; margin-top: 24px; }
+        .example-section { background: #f9fafb; border-radius: 8px; margin-top: 40px; padding: 20px; }
+        .example-svg { display: flex; justify-content: center; margin: 16px 0; }
+        .example-title { font-weight: bold; margin-bottom: 8px; }
+        .example-step { margin-bottom: 6px; }
+        .angle-label { font-size: 14px; font-weight: bold; }
+        /* Nuovo layout per affiancare e centrare */
+        .main-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 0;
+        }
+        @media (max-width: 1100px) {
+            .main-flex { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-flex">
+        <div class="container" style="min-width:340px;flex:1 1 340px;max-width:500px;">
+            <h1>Circle Theorems Calculator</h1>
+            <label for="theorem" style="margin-bottom:6px;">Choose the theorem:</label>
+            <select id="theorem" style="margin-bottom:18px; padding: 7px 8px; border-radius: 4px; border: 1px solid #bbb; font-size: 15px;">
+                <option value="central">Angle at the center</option>
+                <option value="circumference">Angle at the circumference</option>
+                <option value="segment">Angles in the same segment</option>
+                <option value="tangent">Tangent and radius</option>
+            </select>
+            <div id="inputs"></div>
+            <button id="calc-btn" onclick="calcola()">Calculate</button>
+            <div class="result" id="result"></div>
+            <div class="svg-container">
+                <svg id="circle-svg" width="300" height="300"></svg>
+            </div>
+        </div>
+        <!-- SECONDA COLONNA, STESSO STILE DELLA PRIMA -->
+        <div class="side-section" style="min-width:340px;flex:1 1 340px;max-width:500px; display:flex; flex-direction:column; align-items:center;">
+            <div class="example-title" style="text-align:center;">Esplora i Teoremi del Cerchio (stile Desmos)</div>
+            <label for="circle-theorem-select" style="margin-bottom:6px; width:100%; text-align:left;">Scegli un teorema da visualizzare:</label>
+            <select id="circle-theorem-select" style="margin-bottom:18px; padding: 7px 8px; border-radius: 4px; border: 1px solid #bbb; font-size: 15px; width:100%;">
+                <option value="center">Angolo al centro</option>
+                <option value="semicircle">Angolo in un semicirconferenza</option>
+                <option value="segment">Angoli nello stesso segmento</option>
+                <option value="cyclic">Quadrilatero ciclico</option>
+                <option value="tangent">Tangente e raggio</option>
+                <option value="alternate">Teorema del segmento alternato</option>
+            </select>
+            <div class="svg-container" style="touch-action:none;">
+                <svg id="theorem-svg" width="320" height="320" style="touch-action:none;user-select:none;"></svg>
+            </div>
+            <div id="theorem-desc" style="margin-top:12px;font-size:15px;color:#444; width:100%;"></div>
+        </div>
+    </div>
+    <div class="example-section">
+        <div class="example-title">Example: Angles in a semicircle</div>
+        <div>
+            Line AB is the diameter of a circle. Angle CAB is 50°. Calculate angles x and y and give reasons for your answers.
+        </div>
+        <div class="example-svg">
+            <svg width="300" height="220" viewBox="0 0 300 220">
+                <!-- Circle -->
+                <circle cx="150" cy="110" r="100" fill="#eaf6ff" stroke="#0078d7" stroke-width="4"/>
+                <!-- Diameter AB -->
+                <line x1="50" y1="110" x2="250" y2="110" stroke="#0078d7" stroke-width="4"/>
+                <!-- Points A, B, C -->
+                <circle cx="50" cy="110" r="5" fill="#0078d7"/>
+                <circle cx="250" cy="110" r="5" fill="#0078d7"/>
+                <!-- C: calcolata per 50° in A -->
+                <!-- C: x = 150 + 100*cos(130°) ≈ 150 - 64.278 ≈ 85.72, y = 110 - 100*sin(130°) ≈ 110 - 76.604 ≈ 33.40 -->
+                <circle cx="85.72" cy="33.40" r="5" fill="#0078d7"/>
+                <!-- Triangle lines AC, BC -->
+                <polyline points="50,110 85.72,33.40 250,110" fill="none" stroke="#2a7" stroke-width="4"/>
+                <!-- Labels A, B, C -->
+                <text x="38" y="128" class="angle-label" fill="#0078d7" font-size="18" font-weight="bold">A</text>
+                <text x="260" y="128" class="angle-label" fill="#0078d7" font-size="18" font-weight="bold">B</text>
+                <text x="70" y="28" class="angle-label" fill="#0078d7" font-size="18" font-weight="bold">C</text>
+                <!-- Angle CAB (at A) -->
+                <path d="M60 110 A22 22 0 0 1 90 80" fill="none" stroke="#d77" stroke-width="2"/>
+                <text x="62" y="97" class="angle-label" fill="#d77" font-size="16" font-weight="bold">50°</text>
+                <!-- Angle x (at C, right angle) -->
+                <!-- Posizionato vicino a C, con simbolo di angolo retto -->
+                <polyline points="90,43 98,43 98,51 106,51" fill="none" stroke="#d77" stroke-width="2"/>
+                <text x="100" y="47" class="angle-label" fill="#d77" font-size="16" font-weight="bold">x</text>
+                <!-- Angle y (at B) -->
+                <path d="M240 110 A18 18 0 0 1 237 120" fill="none" stroke="#d77" stroke-width="2"/>
+                <text x="235" y="105" class="angle-label" fill="#d77" font-size="16" font-weight="bold">y</text>
+            </svg>
+        </div>
+        <div class="example-title">Solution:</div>
+        <div class="example-step">Angle x = <b>90°</b> (Angle in a semicircle)</div>
+        <div class="example-step">Angle y = <b>40°</b> (50° + 40° + 90° = 180°, Angles in a triangle)</div>
+    </div>
+    <div class="example-section">
+        <div class="example-title">History of Circles and the Circle Theorems</div>
+        <div style="line-height:1.7;">
+            <b>The circle</b> is one of the oldest and most fundamental shapes in mathematics, art, and nature. The study of circles dates back to ancient civilizations such as the Babylonians, Egyptians, and Greeks. The Greeks, especially Euclid and Archimedes, made significant contributions to the understanding of circles, their properties, and their relationships with other geometric figures.<br><br>
+            <b>Euclid's Elements</b> (around 300 BC) contains many propositions about circles, including the fact that the angle in a semicircle is a right angle and that tangents to a circle are perpendicular to the radius at the point of contact. Archimedes further developed the mathematics of circles, calculating the value of π and exploring the area and circumference.<br><br>
+            <b>The Circle Theorems</b> are a set of results in Euclidean geometry that describe the relationships between angles, chords, tangents, and radii in a circle. These theorems are fundamental in secondary school mathematics and include:<br>
+            <ul>
+                <li><b>Angle at the center theorem:</b> The angle at the center of a circle is twice the angle at the circumference subtended by the same arc.</li>
+                <li><b>Angle in a semicircle:</b> The angle in a semicircle is a right angle (90°).</li>
+                <li><b>Angles in the same segment:</b> Angles in the same segment of a circle are equal.</li>
+                <li><b>Opposite angles of a cyclic quadrilateral:</b> The sum of the opposite angles is 180°.</li>
+                <li><b>Tangent and radius:</b> A tangent to a circle is perpendicular to the radius at the point of contact.</li>
+                <li><b>Alternate segment theorem:</b> The angle between a tangent and a chord through the point of contact is equal to the angle in the alternate segment.</li>
+            </ul>
+            <b>Applications:</b> Circle theorems are used in geometry, engineering, astronomy, and many fields where circular shapes and motions are present. They are also essential for solving geometric problems and proofs.<br><br>
+            <i>From ancient times to modern mathematics, the study of circles has inspired discoveries, art, and technology. The circle theorems remain a cornerstone of geometric reasoning and education.</i>
+        </div>
+    </div>
+    <script>
+        const inputsDiv = document.getElementById('inputs');
+        const theoremSelect = document.getElementById('theorem');
+        const svg = document.getElementById('circle-svg');
+        const calcBtn = document.getElementById('calc-btn');
+
+        function clamp(val, min, max) {
+            if (isNaN(val)) return min;
+            return Math.max(min, Math.min(max, val));
+        }
+
+        function toRadians(deg) {
+            return deg * Math.PI / 180;
+        }
+
+        function drawCentral(angleCircum) {
+            const cx = 150, cy = 150, r = 100;
+            angleCircum = clamp(angleCircum, 1, 180);
+            const angleC = angleCircum * 2;
+            const labelRadius = r + 25;
+            const labelAngle = angleC / 2;
+            const labelX = cx + labelRadius * Math.cos(toRadians(labelAngle));
+            const labelY = cy + labelRadius * Math.sin(toRadians(labelAngle));
+            svg.innerHTML = `
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="2"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(toRadians(0))}" y2="${cy + r * Math.sin(toRadians(0))}" stroke="#d77" stroke-width="2"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(toRadians(angleC))}" y2="${cy + r * Math.sin(toRadians(angleC))}" stroke="#d77" stroke-width="2"/>
+                <path d="M${cx + r * Math.cos(toRadians(0))} ${cy + r * Math.sin(toRadians(0))}
+                         A${r} ${r} 0 0 1 ${cx + r * Math.cos(toRadians(angleC))} ${cy + r * Math.sin(toRadians(angleC))}"
+                      fill="none" stroke="#aaa" stroke-width="1"/>
+                <text x="${cx + 30}" y="${cy - 10}" font-size="16" fill="#0078d7">O</text>
+                <text x="${labelX}" y="${labelY}" font-size="14" fill="#d77" text-anchor="middle" alignment-baseline="middle">2θ</text>
+            `;
+        }
+
+        function drawCircumference(angleCentral) {
+            const cx = 150, cy = 150, r = 100;
+            angleCentral = clamp(angleCentral, 1, 360);
+            const angleC = angleCentral;
+            const angleCircum = angleCentral / 2;
+            const px = cx + r * Math.cos(toRadians(angleCircum));
+            const py = cy + r * Math.sin(toRadians(angleCircum));
+            const labelRadius = r + 25;
+            const labelAngle = angleC / 2;
+            const label2thetaX = cx + labelRadius * Math.cos(toRadians(labelAngle));
+            const label2thetaY = cy + labelRadius * Math.sin(toRadians(labelAngle));
+            const labelThetaX = px + 18 * Math.cos(toRadians(angleCircum + 20));
+            const labelThetaY = py + 18 * Math.sin(toRadians(angleCircum + 20));
+            svg.innerHTML = `
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="2"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(toRadians(0))}" y2="${cy + r * Math.sin(toRadians(0))}" stroke="#d77" stroke-width="2"/>
+                <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(toRadians(angleC))}" y2="${cy + r * Math.sin(toRadians(angleC))}" stroke="#d77" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(0))}" y1="${cy + r * Math.sin(toRadians(0))}" x2="${px}" y2="${py}" stroke="#2a7" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(angleC))}" y1="${cy + r * Math.sin(toRadians(angleC))}" x2="${px}" y2="${py}" stroke="#2a7" stroke-width="2"/>
+                <text x="${cx + 30}" y="${cy - 10}" font-size="16" fill="#0078d7">O</text>
+                <text x="${labelThetaX}" y="${labelThetaY}" font-size="14" fill="#2a7" text-anchor="middle" alignment-baseline="middle">θ</text>
+                <text x="${label2thetaX}" y="${label2thetaY}" font-size="14" fill="#d77" text-anchor="middle" alignment-baseline="middle">2θ</text>
+            `;
+        }
+
+        function drawSegment(angleA) {
+            const cx = 150, cy = 150, r = 100;
+            angleA = clamp(angleA, 1, 180);
+            const angle1 = 40;
+            const angle2 = 140;
+            const labelRadius = r + 18;
+            const label1X = cx + labelRadius * Math.cos(toRadians(270));
+            const label1Y = cy + labelRadius * Math.sin(toRadians(270));
+            const label2X = cx + labelRadius * Math.cos(toRadians(90));
+            const label2Y = cy + labelRadius * Math.sin(toRadians(90));
+            svg.innerHTML = `
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(angle1))}" y1="${cy + r * Math.sin(toRadians(angle1))}"
+                      x2="${cx + r * Math.cos(toRadians(angle2))}" y2="${cy + r * Math.sin(toRadians(angle2))}" stroke="#d77" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(angle1))}" y1="${cy + r * Math.sin(toRadians(angle1))}"
+                      x2="${cx + r * Math.cos(toRadians(270))}" y2="${cy + r * Math.sin(toRadians(270))}" stroke="#2a7" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(angle2))}" y1="${cy + r * Math.sin(toRadians(angle2))}"
+                      x2="${cx + r * Math.cos(toRadians(270))}" y2="${cy + r * Math.sin(toRadians(270))}" stroke="#2a7" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(angle1))}" y1="${cy + r * Math.sin(toRadians(angle1))}"
+                      x2="${cx + r * Math.cos(toRadians(90))}" y2="${cy + r * Math.sin(toRadians(90))}" stroke="#2a7" stroke-width="2"/>
+                <line x1="${cx + r * Math.cos(toRadians(angle2))}" y1="${cy + r * Math.sin(toRadians(angle2))}"
+                      x2="${cx + r * Math.cos(toRadians(90))}" y2="${cy + r * Math.sin(toRadians(90))}" stroke="#2a7" stroke-width="2"/>
+                <text x="${label1X}" y="${label1Y}" font-size="14" fill="#2a7" text-anchor="middle" alignment-baseline="middle">θ</text>
+                <text x="${label2X}" y="${label2Y}" font-size="14" fill="#2a7" text-anchor="middle" alignment-baseline="middle">θ</text>
+            `;
+        }
+
+        function drawTangent() {
+            const cx = 150, cy = 150, r = 100;
+            const px = cx + r;
+            const py = cy;
+            svg.innerHTML = `
+                <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="2"/>
+                <line x1="${cx}" y1="${cy}" x2="${px}" y2="${py}" stroke="#d77" stroke-width="2"/>
+                <line x1="${px}" y1="${py}" x2="${px + 50}" y2="${py}" stroke="#2a7" stroke-width="2"/>
+                <text x="${cx + 30}" y="${cy - 20}" font-size="16" fill="#0078d7">O</text>
+                <text x="${px + 35}" y="${py - 15}" font-size="14" fill="#2a7">Tangent</text>
+                <text x="${cx + r/2}" y="${cy - 18}" font-size="14" fill="#d77">r</text>
+                <text x="${px + 18}" y="${py + 28}" font-size="14" fill="#d77">90°</text>
+            `;
+        }
+
+        function validateInput(id, min, max) {
+            const el = document.getElementById(id);
+            if (!el) return false;
+            const val = parseFloat(el.value);
+            if (isNaN(val) || val < min || val > max) {
+                el.style.borderColor = 'red';
+                return false;
+            }
+            el.style.borderColor = '';
+            return true;
+        }
+
+        function updateButtonState() {
+            const t = theoremSelect.value;
+            let valid = true;
+            if (t === 'central') {
+                valid = validateInput('circumAngle', 1, 180);
+            } else if (t === 'circumference') {
+                valid = validateInput('centralAngle', 1, 360);
+            } else if (t === 'segment') {
+                valid = validateInput('angleA', 1, 180);
+            }
+            calcBtn.disabled = !valid;
+        }
+
+        function renderInputs() {
+            const t = theoremSelect.value;
+            let html = '';
+            if (t === 'central') {
+                html = `
+                    <label for="circumAngle">Angle at the circumference (°):</label>
+                    <input type="number" id="circumAngle" min="1" max="180" step="any" value="30">
+                `;
+                drawCentral(30);
+            } else if (t === 'circumference') {
+                html = `
+                    <label for="centralAngle">Angle at the center (°):</label>
+                    <input type="number" id="centralAngle" min="1" max="360" step="any" value="60">
+                `;
+                drawCircumference(60);
+            } else if (t === 'segment') {
+                html = `
+                    <label for="angleA">Angle A (°):</label>
+                    <input type="number" id="angleA" min="1" max="180" step="any" value="40">
+                `;
+                drawSegment(40);
+            } else if (t === 'tangent') {
+                html = `
+                    <label for="radiusAngle">Angle between tangent and radius (°):</label>
+                    <input type="number" id="radiusAngle" min="90" max="90" step="any" value="90" disabled>
+                    <small>This angle is always 90°</small>
+                `;
+                drawTangent();
+            }
+            inputsDiv.innerHTML = html;
+
+            // Robust events
+            if (t === 'central') {
+                const el = document.getElementById('circumAngle');
+                el.addEventListener('input', e => {
+                    let v = clamp(Number(e.target.value), 1, 180);
+                    drawCentral(v);
+                    updateButtonState();
+                });
+                el.addEventListener('change', e => {
+                    let v = clamp(Number(e.target.value), 1, 180);
+                    drawCentral(v);
+                    updateButtonState();
+                });
+            } else if (t === 'circumference') {
+                const el = document.getElementById('centralAngle');
+                el.addEventListener('input', e => {
+                    let v = clamp(Number(e.target.value), 1, 360);
+                    drawCircumference(v);
+                    updateButtonState();
+                });
+                el.addEventListener('change', e => {
+                    let v = clamp(Number(e.target.value), 1, 360);
+                    drawCircumference(v);
+                    updateButtonState();
+                });
+            } else if (t === 'segment') {
+                const el = document.getElementById('angleA');
+                el.addEventListener('input', e => {
+                    let v = clamp(Number(e.target.value), 1, 180);
+                    drawSegment(v);
+                    updateButtonState();
+                });
+                el.addEventListener('change', e => {
+                    let v = clamp(Number(e.target.value), 1, 180);
+                    drawSegment(v);
+                    updateButtonState();
+                });
+            }
+            updateButtonState();
+        }
+
+        theoremSelect.addEventListener('change', renderInputs);
+        renderInputs();
+
+        function calcola() {
+            const t = theoremSelect.value;
+            let result = '';
+            if (t === 'central') {
+                const el = document.getElementById('circumAngle');
+                let angle = clamp(parseFloat(el.value), 1, 180);
+                if (isNaN(angle)) { result = 'Enter a valid value.'; }
+                else result = `The angle at the center is ${angle * 2}° (double the angle at the circumference).`;
+                drawCentral(angle);
+            } else if (t === 'circumference') {
+                const el = document.getElementById('centralAngle');
+                let angle = clamp(parseFloat(el.value), 1, 360);
+                if (isNaN(angle)) { result = 'Enter a valid value.'; }
+                else result = `The angle at the circumference is ${angle / 2}° (half the angle at the center).`;
+                drawCircumference(angle);
+            } else if (t === 'segment') {
+                const el = document.getElementById('angleA');
+                let angle = clamp(parseFloat(el.value), 1, 180);
+                if (isNaN(angle)) { result = 'Enter a valid value.'; }
+                else result = `All angles in the same segment are ${angle}°.`;
+                drawSegment(angle);
+            } else if (t === 'tangent') {
+                result = "The angle between tangent and radius is always 90°.";
+                drawTangent();
+            }
+            document.getElementById('result').textContent = result;
+        }
+        // --- SEZIONE INTERATTIVA TEORIE DEL CERCHIO DRAGGABILE ---
+        const circleTheoremSVG = document.getElementById('theorem-svg');
+        const circleTheoremSelect = document.getElementById('circle-theorem-select');
+        const circleTheoremDesc = document.getElementById('theorem-desc');
+
+        // Stato per angoli trascinabili
+        let dragState = {
+            dragging: false,
+            angle: -Math.PI / 3, // default 60° sopra il diametro per semicircle
+            angle2: Math.PI / 3  // default 60° sotto il diametro per segment/center
+        };
+
+        function polarToXY(cx, cy, r, angle) {
+            return {
+                x: cx + r * Math.cos(angle),
+                y: cy - r * Math.sin(angle)
+            };
+        }
+
+        function getAngleFromXY(cx, cy, x, y) {
+            // atan2(y, x) con y invertito per SVG
+            return Math.atan2(cy - y, x - cx);
+        }
+
+        function drawTheoremSVG(type) {
+            const cx = 160, cy = 160, r = 110;
+            let svg = '', desc = '';
+            if (type === 'center') {
+                // Angolo al centro trascinabile
+                let a1 = dragState.angle;
+                let a2 = dragState.angle2;
+                if (a1 > a2 - 0.35) a1 = a2 - 0.35;
+                if (a2 < a1 + 0.35) a2 = a1 + 0.35;
+                if (a1 < -Math.PI) a1 = -Math.PI;
+                if (a2 > Math.PI) a2 = Math.PI;
+                dragState.angle = a1;
+                dragState.angle2 = a2;
+                const p1 = polarToXY(cx, cy, r, a1);
+                const p2 = polarToXY(cx, cy, r, a2);
+                // Calcola anche l'angolo alla circonferenza
+                const angleAtCenter = Math.abs(a2 - a1) * 180 / Math.PI;
+                const angleAtCirc = angleAtCenter / 2;
+                // Punto sulla circonferenza per l'angolo alla circonferenza
+                const circAngle = (a1 + a2) / 2;
+                const circP = polarToXY(cx, cy, r, circAngle);
+                svg = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="3"/>
+                    <line x1="${cx}" y1="${cy}" x2="${p1.x}" y2="${p1.y}" stroke="#d77" stroke-width="3"/>
+                    <line x1="${cx}" y1="${cy}" x2="${p2.x}" y2="${p2.y}" stroke="#d77" stroke-width="3"/>
+                    <path d="M${p1.x} ${p1.y}
+                             A${r} ${r} 0 ${(Math.abs(a2-a1) > Math.PI ? 1 : 0)} 0 ${p2.x} ${p2.y}"
+                          fill="none" stroke="#aaa" stroke-width="1.5"/>
+                    <circle cx="${p1.x}" cy="${p1.y}" r="9" fill="#fff" stroke="#d77" stroke-width="2" style="cursor:pointer"/>
+                    <circle cx="${p2.x}" cy="${p2.y}" r="9" fill="#fff" stroke="#d77" stroke-width="2" style="cursor:pointer"/>
+                    <text x="${cx + 40}" y="${cy - 10}" font-size="18" fill="#0078d7">O</text>
+                    <text x="${cx + 80}" y="${cy - 60}" font-size="16" fill="#d77" font-weight="bold">${Math.round(angleAtCenter)}°</text>
+                    <line x1="${p1.x}" y1="${p1.y}" x2="${circP.x}" y2="${circP.y}" stroke="#2a7" stroke-width="2"/>
+                    <line x1="${p2.x}" y1="${p2.y}" x2="${circP.x}" y2="${circP.y}" stroke="#2a7" stroke-width="2"/>
+                    <circle cx="${circP.x}" cy="${circP.y}" r="7" fill="#2a7"/>
+                    <text x="${circP.x + 10}" y="${circP.y - 10}" font-size="15" fill="#2a7" font-weight="bold">${Math.round(angleAtCirc)}°</text>
+                `;
+                desc = `<b>Teorema dell'angolo al centro:</b> L'angolo al centro (rosso) è il doppio dell'angolo alla circonferenza (verde) che insiste sullo stesso arco.<br>
+                <ul>
+                    <li>Trascina i punti rossi per cambiare l'ampiezza dell'arco.</li>
+                    <li>L'angolo al centro &theta;<sub>c</sub> = 2 &times; &theta;<sub>circ</sub></li>
+                </ul>`;
+            } else if (type === 'semicircle') {
+                // Angolo in semicirconferenza trascinabile migliorato
+                // C deve stare sulla semicirconferenza superiore (y < cy)
+                let a = dragState.angle;
+                const cx = 160, cy = 160, r = 110;
+                // Forza C a stare nella semicirconferenza superiore (da -PI a 0)
+                if (a > 0) a = 0;
+                if (a < -Math.PI) a = -Math.PI;
+                // Evita che C sia troppo vicino agli estremi (A o B)
+                const minDelta = 0.45;
+                if (a > -minDelta) a = -minDelta;
+                if (a < -Math.PI + minDelta) a = -Math.PI + minDelta;
+                dragState.angle = a;
+                const A = polarToXY(cx, cy, r, Math.PI);
+                const B = polarToXY(cx, cy, r, 0);
+                const C = polarToXY(cx, cy, r, a);
+                const labelX = C.x + (cx - C.x) * 0.18;
+                const labelY = C.y + (cy - C.y) * 0.18;
+                const orthoLen = 16;
+                const vx = (A.x - C.x) / r, vy = (A.y - C.y) / r;
+                const wx = (B.x - C.x) / r, wy = (B.y - C.y) / r;
+                const px1 = C.x + vx * orthoLen;
+                const py1 = C.y + vy * orthoLen;
+                const px2 = px1 + wx * orthoLen * 0.7;
+                const py2 = py1 + wy * orthoLen * 0.7;
+                const px3 = C.x + wx * orthoLen;
+                const py3 = C.y + wy * orthoLen;
+                svg = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="3"/>
+                    <line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#0078d7" stroke-width="3"/>
+                    <circle cx="${A.x}" cy="${A.y}" r="5" fill="#0078d7"/>
+                    <circle cx="${B.x}" cy="${B.y}" r="5" fill="#0078d7"/>
+                    <circle cx="${C.x}" cy="${C.y}" r="10" fill="#fff" stroke="#d77" stroke-width="2" style="cursor:pointer"/>
+                    <line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#2a7" stroke-width="3"/>
+                    <line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#2a7" stroke-width="3"/>
+                    <text x="${A.x - 18}" y="${A.y + 18}" font-size="16" fill="#0078d7" font-weight="bold">A</text>
+                    <text x="${B.x + 8}" y="${B.y + 18}" font-size="16" fill="#0078d7" font-weight="bold">B</text>
+                    <text x="${C.x - 10}" y="${C.y - 10}" font-size="16" fill="#0078d7" font-weight="bold">C</text>
+                    <text x="${labelX}" y="${labelY}" font-size="16" fill="#d77" font-weight="bold" text-anchor="middle" alignment-baseline="middle">90°</text>
+                    <polyline points="${C.x},${C.y} ${px1},${py1} ${px2},${py2} ${px3},${py3}" fill="none" stroke="#d77" stroke-width="2"/>
+                `;
+                desc = `<b>Angolo in semicirconferenza:</b> L'angolo inscritto in una semicirconferenza è sempre retto (90°).<br>
+                <ul>
+                    <li>Trascina il punto rosso sulla semicirconferenza superiore.</li>
+                    <li>Il triangolo ABC è sempre rettangolo in C.</li>
+                </ul>`;
+            } else if (type === 'segment') {
+                // Angoli nello stesso segmento trascinabile
+                let a = dragState.angle;
+                let b = dragState.angle2;
+                if (Math.abs(a - b) < 0.35) b = a + 0.35;
+                if (a < -Math.PI) a = -Math.PI;
+                if (a > Math.PI) a = Math.PI;
+                if (b < -Math.PI) b = -Math.PI;
+                if (b > Math.PI) b = Math.PI;
+                dragState.angle = a;
+                dragState.angle2 = b;
+                const A = polarToXY(cx, cy, r, a);
+                const B = polarToXY(cx, cy, r, b);
+                const C = polarToXY(cx, cy, r, Math.PI/2);
+                const D = polarToXY(cx, cy, r, -Math.PI/2);
+                const theta = Math.abs(Math.round((b-a)*180/Math.PI));
+                svg = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="3"/>
+                    <line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#d77" stroke-width="3"/>
+                    <line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#2a7" stroke-width="3"/>
+                    <line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#2a7" stroke-width="3"/>
+                    <line x1="${A.x}" y1="${A.y}" x2="${D.x}" y2="${D.y}" stroke="#2a7" stroke-width="3"/>
+                    <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#2a7" stroke-width="3"/>
+                    <circle cx="${A.x}" cy="${A.y}" r="9" fill="#fff" stroke="#d77" stroke-width="2" style="cursor:pointer"/>
+                    <circle cx="${B.x}" cy="${B.y}" r="9" fill="#fff" stroke="#d77" stroke-width="2" style="cursor:pointer"/>
+                    <circle cx="${C.x}" cy="${C.y}" r="5" fill="#0078d7"/>
+                    <circle cx="${D.x}" cy="${D.y}" r="5" fill="#0078d7"/>
+                    <text x="${A.x - 18}" y="${A.y + 18}" font-size="16" fill="#0078d7" font-weight="bold">A</text>
+                    <text x="${B.x + 8}" y="${B.y + 18}" font-size="16" fill="#0078d7" font-weight="bold">B</text>
+                    <text x="${C.x - 20}" y="${C.y - 10}" font-size="16" fill="#0078d7" font-weight="bold">C</text>
+                    <text x="${D.x + 10}" y="${D.y + 10}" font-size="16" fill="#0078d7" font-weight="bold">D</text>
+                    <text x="${C.x - 10}" y="${C.y + 20}" font-size="16" fill="#d77" font-weight="bold">${theta}°</text>
+                    <text x="${D.x + 10}" y="${D.y - 10}" font-size="16" fill="#d77" font-weight="bold">${theta}°</text>
+                `;
+                desc = `<b>Angoli nello stesso segmento:</b> Gli angoli alla circonferenza che insistono sullo stesso arco sono uguali.<br>
+                <ul>
+                    <li>Trascina i punti rossi per cambiare la posizione degli angoli.</li>
+                    <li>Gli angoli evidenziati sono sempre congruenti (&theta;).</li>
+                </ul>`;
+            } else if (type === 'cyclic') {
+                // Quadrilatero ciclico con angoli e proporzioni migliori
+                // Vertici A, B, C, D in senso orario, distribuiti in modo più naturale
+                const angles = [
+                    Math.PI * 0.8,   // A
+                    Math.PI * 0.35,  // B
+                    -Math.PI * 0.15, // C
+                    -Math.PI * 0.7   // D
+                ];
+                const A = polarToXY(cx, cy, r, angles[0]);
+                const B = polarToXY(cx, cy, r, angles[1]);
+                const C = polarToXY(cx, cy, r, angles[2]);
+                const D = polarToXY(cx, cy, r, angles[3]);
+
+                // Calcolo angoli interni (in gradi), sempre minori di 180
+                function angleAt(P, Q, R) {
+                    // angolo in Q tra P-Q e R-Q
+                    const v1x = P.x - Q.x, v1y = P.y - Q.y;
+                    const v2x = R.x - Q.x, v2y = R.y - Q.y;
+                    const dot = v1x * v2x + v1y * v2y;
+                    const det = v1x * v2y - v1y * v2x;
+                    let ang = Math.atan2(det, dot) * 180 / Math.PI;
+                    if (ang < 0) ang += 360;
+                    if (ang > 180) ang = 360 - ang;
+                    return ang;
+                }
+                // Calcola e arrotonda
+                // Calcola solo due angoli, gli altri sono 180 - opposto
+                const angleA = Math.round(angleAt(D, A, B));
+                const angleB = Math.round(angleAt(A, B, C));
+                const angleC = 180 - angleA;
+                const angleD = 180 - angleB;
+
+                // Offset per le label degli angoli per evitare sovrapposizioni
+                function offset(x, y, dx, dy) {
+                    return { x: x + dx, y: y + dy };
+                }
+                const labelA = offset(A.x, A.y, -38, 10);
+                const labelB = offset(B.x, B.y, 28, 18);
+                const labelC = offset(C.x, C.y, 18, -28);
+                const labelD = offset(D.x, D.y, -44, -18);
+
+                svg = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="3"/>
+                    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y} ${D.x},${D.y}" fill="none" stroke="#d77" stroke-width="3"/>
+                    <circle cx="${A.x}" cy="${A.y}" r="7" fill="#fff" stroke="#0078d7" stroke-width="2"/>
+                    <circle cx="${B.x}" cy="${B.y}" r="7" fill="#fff" stroke="#0078d7" stroke-width="2"/>
+                    <circle cx="${C.x}" cy="${C.y}" r="7" fill="#fff" stroke="#0078d7" stroke-width="2"/>
+                    <circle cx="${D.x}" cy="${D.y}" r="7" fill="#fff" stroke="#0078d7" stroke-width="2"/>
+                    <text x="${A.x - 18}" y="${A.y + 18}" font-size="16" fill="#0078d7" font-weight="bold">A</text>
+                    <text x="${B.x + 10}" y="${B.y + 18}" font-size="16" fill="#0078d7" font-weight="bold">B</text>
+                    <text x="${C.x + 10}" y="${C.y - 10}" font-size="16" fill="#0078d7" font-weight="bold">C</text>
+                    <text x="${D.x - 28}" y="${D.y - 10}" font-size="16" fill="#0078d7" font-weight="bold">D</text>
+                    <text x="${labelA.x}" y="${labelA.y}" font-size="16" fill="#d77" font-weight="bold">${angleA}°</text>
+                    <text x="${labelB.x}" y="${labelB.y}" font-size="16" fill="#d77" font-weight="bold">${angleB}°</text>
+                    <text x="${labelC.x}" y="${labelC.y}" font-size="16" fill="#d77" font-weight="bold">${angleC}°</text>
+                    <text x="${labelD.x}" y="${labelD.y}" font-size="16" fill="#d77" font-weight="bold">${angleD}°</text>
+                `;
+                desc = `<b>Quadrilatero ciclico:</b> In ogni quadrilatero inscritto in una circonferenza, la somma degli angoli opposti è sempre 180°.<br>
+                <ul>
+                    <li>ABCD è un quadrilatero ciclico.</li>
+                    <li>Angoli opposti: ${angleA}° + ${angleC}° = 180° &nbsp;&nbsp; ${angleB}° + ${angleD}° = 180°</li>
+                    <li>x + y = 180°</li>
+                </ul>`;
+            } else if (type === 'tangent') {
+                svg = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="3"/>
+                    <line x1="${cx}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#d77" stroke-width="3"/>
+                    <line x1="${cx + r}" y1="${cy}" x2="${cx + r}" y2="${cy - 70}" stroke="#2a7" stroke-width="3"/>
+                    <text x="${cx + 30}" y="${cy - 10}" font-size="18" fill="#0078d7">O</text>
+                    <text x="${cx + r + 10}" y="${cy - 40}" font-size="16" fill="#2a7">Tangente</text>
+                    <text x="${cx + r/2}" y="${cy - 18}" font-size="16" fill="#d77">r</text>
+                    <text x="${cx + r + 18}" y="${cy + 28}" font-size="16" fill="#d77">90°</text>
+                `;
+                desc = `<b>Tangente e raggio:</b> La tangente a una circonferenza è sempre perpendicolare al raggio nel punto di tagenza.<br>
+                <ul>
+                    <li>Il raggio (rosso) e la tangente (verde) formano sempre un angolo retto.</li>
+                </ul>`;
+            } else if (type === 'alternate') {
+                svg = `
+                    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#eaf6ff" stroke="#0078d7" stroke-width="3"/>
+                    <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(Math.PI/4)}" y2="${cy - r * Math.sin(Math.PI/4)}" stroke="#d77" stroke-width="3"/>
+                    <line x1="${cx + r * Math.cos(Math.PI/4)}" y1="${cy - r * Math.sin(Math.PI/4)}" x2="${cx + r * Math.cos(Math.PI/4)}" y2="${cy + r * Math.sin(Math.PI/4)}" stroke="#2a7" stroke-width="3"/>
+                    <line x1="${cx + r * Math.cos(Math.PI/4)}" y1="${cy + r * Math.sin(Math.PI/4)}" x2="${cx}" y2="${cy}" stroke="#d77" stroke-width="3"/>
+                    <text x="${cx + r * Math.cos(Math.PI/4) + 10}" y="${cy - r * Math.sin(Math.PI/4) - 10}" font-size="16" fill="#2a7">Tangente</text>
+                    <text x="${cx + 30}" y="${cy - 10}" font-size="18" fill="#0078d7">O</text>
+                    <text x="${cx + r * Math.cos(Math.PI/4) - 10}" y="${cy + 30}" font-size="16" fill="#d77">θ</text>
+                    <text x="${cx - 30}" y="${cy - 30}" font-size="16" fill="#d77">θ</text>
+                `;
+                desc = `<b>Teorema del segmento alternato:</b> L'angolo tra una tangente e una corda è uguale all'angolo nel segmento alternato.<br>
+                <ul>
+                    <li>La tangente (verde) e la corda (rosso) formano un angolo θ.</li>
+                    <li>Questo angolo è uguale all'angolo θ opposto nella circonferenza.</li>
+                </ul>`;
+            }
+            circleTheoremSVG.innerHTML = svg;
+            circleTheoremDesc.innerHTML = desc;
+        }
+
+        // Gestione drag sugli angoli
+        let dragTarget = null;
+        circleTheoremSVG.addEventListener('mousedown', startDrag);
+        circleTheoremSVG.addEventListener('touchstart', startDrag, {passive:false});
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('touchmove', dragMove, {passive:false});
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+
+        function getSVGCoords(evt) {
+            const rect = circleTheoremSVG.getBoundingClientRect();
+            let x, y;
+            if (evt.touches && evt.touches.length) {
+                x = evt.touches[0].clientX - rect.left;
+                y = evt.touches[0].clientY - rect.top;
+            } else {
+                x = evt.clientX - rect.left;
+                y = evt.clientY - rect.top;
+            }
+            return {x, y};
+        }
+
+        function startDrag(evt) {
+            const pt = getSVGCoords(evt);
+            let found = false;
+            const type = circleTheoremSelect.value;
+            if (type === 'center') {
+                const cx = 160, cy = 160, r = 110;
+                const a1 = dragState.angle;
+                const a2 = dragState.angle2;
+                const p1 = polarToXY(cx, cy, r, a1);
+                const p2 = polarToXY(cx, cy, r, a2);
+                if (Math.hypot(pt.x - p1.x, pt.y - p1.y) < 15) {
+                    dragTarget = 'angle';
+                    found = true;
+                } else if (Math.hypot(pt.x - p2.x, pt.y - p2.y) < 15) {
+                    dragTarget = 'angle2';
+                    found = true;
+                }
+            } else if (type === 'semicircle') {
+                const cx = 160, cy = 160, r = 110;
+                const a = dragState.angle;
+                const C = polarToXY(cx, cy, r, a);
+                if (Math.hypot(pt.x - C.x, pt.y - C.y) < 15) {
+                    dragTarget = 'angle';
+                    found = true;
+                }
+            } else if (type === 'segment') {
+                const cx = 160, cy = 160, r = 110;
+                const a = dragState.angle;
+                const b = dragState.angle2;
+                const A = polarToXY(cx, cy, r, a);
+                const B = polarToXY(cx, cy, r, b);
+                if (Math.hypot(pt.x - A.x, pt.y - A.y) < 15) {
+                    dragTarget = 'angle';
+                    found = true;
+                } else if (Math.hypot(pt.x - B.x, pt.y - B.y) < 15) {
+                    dragTarget = 'angle2';
+                    found = true;
+                }
+            }
+            if (found) {
+                dragState.dragging = true;
+                evt.preventDefault();
+            }
+        }
+
+        function dragMove(evt) {
+            if (!dragState.dragging || !dragTarget) return;
+            const pt = getSVGCoords(evt);
+            const cx = 160, cy = 160;
+            let angle = getAngleFromXY(cx, cy, pt.x, pt.y);
+            if (dragTarget === 'angle') {
+                if (circleTheoremSelect.value === 'center') {
+                    // Mantieni almeno 30° tra i due raggi
+                    if (angle > dragState.angle2 - Math.PI/6) angle = dragState.angle2 - Math.PI/6;
+                    if (angle < -Math.PI) angle = -Math.PI;
+                    dragState.angle = angle;
+                } else if (circleTheoremSelect.value === 'semicircle') {
+                    if (angle > 0) angle = 0;
+                    if (angle < -Math.PI) angle = -Math.PI;
+                    dragState.angle = angle;
+                } else if (circleTheoremSelect.value === 'segment') {
+                    dragState.angle = angle;
+                }
+            } else if (dragTarget === 'angle2') {
+                if (circleTheoremSelect.value === 'center') {
+                    if (angle < dragState.angle + Math.PI/6) angle = dragState.angle + Math.PI/6;
+                    if (angle > Math.PI) angle = Math.PI;
+                    dragState.angle2 = angle;
+                } else if (circleTheoremSelect.value === 'segment') {
+                    dragState.angle2 = angle;
+                }
+            }
+            drawTheoremSVG(circleTheoremSelect.value);
+            evt.preventDefault();
+        }
+
+        function endDrag(evt) {
+            dragState.dragging = false;
+            dragTarget = null;
+        }
+
+        circleTheoremSelect.addEventListener('change', function(e) {
+            // Reset angoli su cambio teorema
+            if (circleTheoremSelect.value === 'semicircle') {
+                dragState.angle = -Math.PI / 3;
+                dragState.angle2 = Math.PI / 3;
+            } else if (circleTheoremSelect.value === 'center') {
+                dragState.angle = -Math.PI / 3;
+                dragState.angle2 = Math.PI / 3;
+            } else if (circleTheoremSelect.value === 'segment') {
+                dragState.angle = -Math.PI / 3;
+                dragState.angle2 = Math.PI / 3;
+            }
+            drawTheoremSVG(circleTheoremSelect.value);
+        });
+        drawTheoremSVG(circleTheoremSelect.value);
+    </script>
+</body>
+</html>
 
