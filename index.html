@@ -17,7 +17,7 @@
         .example-title { font-weight: bold; margin-bottom: 8px; }
         .example-step { margin-bottom: 6px; }
         .angle-label { font-size: 14px; font-weight: bold; }
-        /* Nuovo layout per affiancare e centrare */
+        /* New layout for side-by-side and centering */
         .main-flex {
             display: flex;
             flex-wrap: wrap;
@@ -49,17 +49,17 @@
                 <svg id="circle-svg" width="300" height="300"></svg>
             </div>
         </div>
-        <!-- SECONDA COLONNA, STESSO STILE DELLA PRIMA -->
+        <!-- SECOND COLUMN, SAME STYLE AS THE FIRST -->
         <div class="side-section" style="min-width:340px;flex:1 1 340px;max-width:500px; display:flex; flex-direction:column; align-items:center;">
-            <div class="example-title" style="text-align:center;">Esplora i Teoremi del Cerchio (stile Desmos)</div>
-            <label for="circle-theorem-select" style="margin-bottom:6px; width:100%; text-align:left;">Scegli un teorema da visualizzare:</label>
+            <div class="example-title" style="text-align:center;">Explore Circle Theorems (Desmos style)</div>
+            <label for="circle-theorem-select" style="margin-bottom:6px; width:100%; text-align:left;">Choose a theorem to display:</label>
             <select id="circle-theorem-select" style="margin-bottom:18px; padding: 7px 8px; border-radius: 4px; border: 1px solid #bbb; font-size: 15px; width:100%;">
-                <option value="center">Angolo al centro</option>
-                <option value="semicircle">Angolo in un semicirconferenza</option>
-                <option value="segment">Angoli nello stesso segmento</option>
-                <option value="cyclic">Quadrilatero ciclico</option>
-                <option value="tangent">Tangente e raggio</option>
-                <option value="alternate">Teorema del segmento alternato</option>
+                <option value="center">Angle at the center</option>
+                <option value="semicircle">Angle in a semicircle</option>
+                <option value="segment">Angles in the same segment</option>
+                <option value="cyclic">Cyclic quadrilateral</option>
+                <option value="tangent">Tangent and radius</option>
+                <option value="alternate">Alternate segment theorem</option>
             </select>
             <div class="svg-container" style="touch-action:none;">
                 <svg id="theorem-svg" width="320" height="320" style="touch-action:none;user-select:none;"></svg>
@@ -81,7 +81,7 @@
                 <!-- Points A, B, C -->
                 <circle cx="50" cy="110" r="5" fill="#0078d7"/>
                 <circle cx="250" cy="110" r="5" fill="#0078d7"/>
-                <!-- C: calcolata per 50° in A -->
+                <!-- C: calculated for 50° at A -->
                 <!-- C: x = 150 + 100*cos(130°) ≈ 150 - 64.278 ≈ 85.72, y = 110 - 100*sin(130°) ≈ 110 - 76.604 ≈ 33.40 -->
                 <circle cx="85.72" cy="33.40" r="5" fill="#0078d7"/>
                 <!-- Triangle lines AC, BC -->
@@ -94,7 +94,7 @@
                 <path d="M60 110 A22 22 0 0 1 90 80" fill="none" stroke="#d77" stroke-width="2"/>
                 <text x="62" y="97" class="angle-label" fill="#d77" font-size="16" font-weight="bold">50°</text>
                 <!-- Angle x (at C, right angle) -->
-                <!-- Posizionato vicino a C, con simbolo di angolo retto -->
+                <!-- Placed near C, with right angle symbol -->
                 <polyline points="90,43 98,43 98,51 106,51" fill="none" stroke="#d77" stroke-width="2"/>
                 <text x="100" y="47" class="angle-label" fill="#d77" font-size="16" font-weight="bold">x</text>
                 <!-- Angle y (at B) -->
@@ -353,16 +353,16 @@
             }
             document.getElementById('result').textContent = result;
         }
-        // --- SEZIONE INTERATTIVA TEORIE DEL CERCHIO DRAGGABILE ---
+        // --- INTERACTIVE CIRCLE THEOREMS SECTION (DRAGGABLE) ---
         const circleTheoremSVG = document.getElementById('theorem-svg');
         const circleTheoremSelect = document.getElementById('circle-theorem-select');
         const circleTheoremDesc = document.getElementById('theorem-desc');
 
-        // Stato per angoli trascinabili
+        // State for draggable angles
         let dragState = {
             dragging: false,
-            angle: -Math.PI / 3, // default 60° sopra il diametro per semicircle
-            angle2: Math.PI / 3  // default 60° sotto il diametro per segment/center
+            angle: -Math.PI / 3, // default 60° above the diameter for semicircle
+            angle2: Math.PI / 3  // default 60° below the diameter for segment/center
         };
 
         function polarToXY(cx, cy, r, angle) {
@@ -381,7 +381,7 @@
             const cx = 160, cy = 160, r = 110;
             let svg = '', desc = '';
             if (type === 'center') {
-                // Angolo al centro trascinabile
+                // Draggable angle at center
                 let a1 = dragState.angle;
                 let a2 = dragState.angle2;
                 if (a1 > a2 - 0.35) a1 = a2 - 0.35;
@@ -414,13 +414,13 @@
                     <circle cx="${circP.x}" cy="${circP.y}" r="7" fill="#2a7"/>
                     <text x="${circP.x + 10}" y="${circP.y - 10}" font-size="15" fill="#2a7" font-weight="bold">${Math.round(angleAtCirc)}°</text>
                 `;
-                desc = `<b>Teorema dell'angolo al centro:</b> L'angolo al centro (rosso) è il doppio dell'angolo alla circonferenza (verde) che insiste sullo stesso arco.<br>
+                desc = `<b>Central angle theorem:</b> The angle at the center (red) is twice the angle at the circumference (green) subtended by the same arc.<br>
                 <ul>
-                    <li>Trascina i punti rossi per cambiare l'ampiezza dell'arco.</li>
-                    <li>L'angolo al centro &theta;<sub>c</sub> = 2 &times; &theta;<sub>circ</sub></li>
+                    <li>Drag the red points to change the arc width.</li>
+                    <li>The center angle &theta;<sub>c</sub> = 2 &times; &theta;<sub>circ</sub></li>
                 </ul>`;
             } else if (type === 'semicircle') {
-                // Angolo in semicirconferenza trascinabile migliorato
+                // Draggable angle in semicircle
                 // C deve stare sulla semicirconferenza superiore (y < cy)
                 let a = dragState.angle;
                 const cx = 160, cy = 160, r = 110;
@@ -460,13 +460,13 @@
                     <text x="${labelX}" y="${labelY}" font-size="16" fill="#d77" font-weight="bold" text-anchor="middle" alignment-baseline="middle">90°</text>
                     <polyline points="${C.x},${C.y} ${px1},${py1} ${px2},${py2} ${px3},${py3}" fill="none" stroke="#d77" stroke-width="2"/>
                 `;
-                desc = `<b>Angolo in semicirconferenza:</b> L'angolo inscritto in una semicirconferenza è sempre retto (90°).<br>
+                desc = `<b>Angle in a semicircle:</b> The angle inscribed in a semicircle is always a right angle (90°).<br>
                 <ul>
-                    <li>Trascina il punto rosso sulla semicirconferenza superiore.</li>
-                    <li>Il triangolo ABC è sempre rettangolo in C.</li>
+                    <li>Drag the red point on the upper semicircle.</li>
+                    <li>The triangle ABC is always right-angled at C.</li>
                 </ul>`;
             } else if (type === 'segment') {
-                // Angoli nello stesso segmento trascinabile
+                // Draggable angles in the same segment
                 let a = dragState.angle;
                 let b = dragState.angle2;
                 if (Math.abs(a - b) < 0.35) b = a + 0.35;
@@ -499,13 +499,13 @@
                     <text x="${C.x - 10}" y="${C.y + 20}" font-size="16" fill="#d77" font-weight="bold">${theta}°</text>
                     <text x="${D.x + 10}" y="${D.y - 10}" font-size="16" fill="#d77" font-weight="bold">${theta}°</text>
                 `;
-                desc = `<b>Angoli nello stesso segmento:</b> Gli angoli alla circonferenza che insistono sullo stesso arco sono uguali.<br>
+                desc = `<b>Angles in the same segment:</b> Angles at the circumference subtended by the same arc are equal.<br>
                 <ul>
-                    <li>Trascina i punti rossi per cambiare la posizione degli angoli.</li>
-                    <li>Gli angoli evidenziati sono sempre congruenti (&theta;).</li>
+                    <li>Drag the red points to change the position of the angles.</li>
+                    <li>The highlighted angles are always congruent (&theta;).</li>
                 </ul>`;
             } else if (type === 'cyclic') {
-                // Quadrilatero ciclico con angoli e proporzioni migliori
+                // Cyclic quadrilateral
                 // Vertici A, B, C, D in senso orario, distribuiti in modo più naturale
                 const angles = [
                     Math.PI * 0.8,   // A
@@ -562,10 +562,10 @@
                     <text x="${labelC.x}" y="${labelC.y}" font-size="16" fill="#d77" font-weight="bold">${angleC}°</text>
                     <text x="${labelD.x}" y="${labelD.y}" font-size="16" fill="#d77" font-weight="bold">${angleD}°</text>
                 `;
-                desc = `<b>Quadrilatero ciclico:</b> In ogni quadrilatero inscritto in una circonferenza, la somma degli angoli opposti è sempre 180°.<br>
+                desc = `<b>Cyclic quadrilateral:</b> In any quadrilateral inscribed in a circle, the sum of the opposite angles is always 180°.<br>
                 <ul>
-                    <li>ABCD è un quadrilatero ciclico.</li>
-                    <li>Angoli opposti: ${angleA}° + ${angleC}° = 180° &nbsp;&nbsp; ${angleB}° + ${angleD}° = 180°</li>
+                    <li>ABCD is a cyclic quadrilateral.</li>
+                    <li>Opposite angles: ${angleA}° + ${angleC}° = 180° &nbsp;&nbsp; ${angleB}° + ${angleD}° = 180°</li>
                     <li>x + y = 180°</li>
                 </ul>`;
             } else if (type === 'tangent') {
@@ -574,13 +574,13 @@
                     <line x1="${cx}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#d77" stroke-width="3"/>
                     <line x1="${cx + r}" y1="${cy}" x2="${cx + r}" y2="${cy - 70}" stroke="#2a7" stroke-width="3"/>
                     <text x="${cx + 30}" y="${cy - 10}" font-size="18" fill="#0078d7">O</text>
-                    <text x="${cx + r + 10}" y="${cy - 40}" font-size="16" fill="#2a7">Tangente</text>
+                    <text x="${cx + r + 10}" y="${cy - 40}" font-size="16" fill="#2a7">Tangent</text>
                     <text x="${cx + r/2}" y="${cy - 18}" font-size="16" fill="#d77">r</text>
                     <text x="${cx + r + 18}" y="${cy + 28}" font-size="16" fill="#d77">90°</text>
                 `;
-                desc = `<b>Tangente e raggio:</b> La tangente a una circonferenza è sempre perpendicolare al raggio nel punto di tagenza.<br>
+                desc = `<b>Tangent and radius:</b> The tangent to a circle is always perpendicular to the radius at the point of tangency.<br>
                 <ul>
-                    <li>Il raggio (rosso) e la tangente (verde) formano sempre un angolo retto.</li>
+                    <li>The radius (red) and the tangent (green) always form a right angle.</li>
                 </ul>`;
             } else if (type === 'alternate') {
                 svg = `
@@ -588,15 +588,15 @@
                     <line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(Math.PI/4)}" y2="${cy - r * Math.sin(Math.PI/4)}" stroke="#d77" stroke-width="3"/>
                     <line x1="${cx + r * Math.cos(Math.PI/4)}" y1="${cy - r * Math.sin(Math.PI/4)}" x2="${cx + r * Math.cos(Math.PI/4)}" y2="${cy + r * Math.sin(Math.PI/4)}" stroke="#2a7" stroke-width="3"/>
                     <line x1="${cx + r * Math.cos(Math.PI/4)}" y1="${cy + r * Math.sin(Math.PI/4)}" x2="${cx}" y2="${cy}" stroke="#d77" stroke-width="3"/>
-                    <text x="${cx + r * Math.cos(Math.PI/4) + 10}" y="${cy - r * Math.sin(Math.PI/4) - 10}" font-size="16" fill="#2a7">Tangente</text>
+                    <text x="${cx + r * Math.cos(Math.PI/4) + 10}" y="${cy - r * Math.sin(Math.PI/4) - 10}" font-size="16" fill="#2a7">Tangent</text>
                     <text x="${cx + 30}" y="${cy - 10}" font-size="18" fill="#0078d7">O</text>
                     <text x="${cx + r * Math.cos(Math.PI/4) - 10}" y="${cy + 30}" font-size="16" fill="#d77">θ</text>
                     <text x="${cx - 30}" y="${cy - 30}" font-size="16" fill="#d77">θ</text>
                 `;
-                desc = `<b>Teorema del segmento alternato:</b> L'angolo tra una tangente e una corda è uguale all'angolo nel segmento alternato.<br>
+                desc = `<b>Alternate segment theorem:</b> The angle between a tangent and a chord through the point of contact is equal to the angle in the alternate segment.<br>
                 <ul>
-                    <li>La tangente (verde) e la corda (rosso) formano un angolo θ.</li>
-                    <li>Questo angolo è uguale all'angolo θ opposto nella circonferenza.</li>
+                    <li>The tangent (green) and the chord (red) form an angle θ.</li>
+                    <li>This angle is equal to the opposite angle θ at the circumference.</li>
                 </ul>`;
             }
             circleTheoremSVG.innerHTML = svg;
